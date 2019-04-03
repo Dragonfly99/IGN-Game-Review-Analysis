@@ -1,0 +1,103 @@
+---
+title: "Squeezing the Data: Using Stats to get more for your Buck."
+output: html_notebook
+---
+
+Hello everyone. Nice to see you all here again. This is a start of a little series on telling a telling more of  a story with your data. Today we'll be revisiting my first dataset to demonstrate this using statistics. While I'm still proud of my first project, it was really simple and I can now see ways in which  little things can be improved to do a better job. 
+
+
+Starting from the top, Instead of loading ggplot2 I can now load the Tidyverse package. This package is a one stop shop for exploratory data analysis. Included in the dpylr package is glimpse. This is just like str except everything the results can fit the screen neatly 
+```{r}
+install.packages("purrr")
+
+library(tidyverse)
+library(purrr)
+
+glimpse(games_df)
+summary(games_df)
+```
+
+
+Next in the oringinal post I wanted to see the range of the scores in a dataset using a histogram. While nothing is wrong with using one, there are a few details I could add about our dear friend.
+
+```{r}
+ggplot(data = games_df, aes(x = Score)) + geom_histogram(fill = "dark red")
+```
+
+First and foremost it is skewed to the left. This simply means that the majority of the scores are not  low. As I discussed in the original article, IGN changed their scoring system from a 100 point scale (Scores could be 2.5, 6.7, etc to 10) to a 20 point scale (Score ends with a 0 or a 5, so 8.0 or 8.5). This was from August 2010 to September 2012. This is likely one of the factors that could have contributed to this. However as there are no dates in this dataset, it would not be something I am capable of investigating right now. 
+
+Since this scoring system is opiniated and based on a set of IGN's criteria, the  average wasn't the best metric to use for the score variabe due to the fact that it can be easily influenced by outliers. For example, a handful of games received a score of 10. And the lowest score for some reason happens to be .5. The median would be a better measurement to look at the scoring.  
+
+```{r}
+  games_df %>%
+  summarise(Avg = mean(Score),
+                Median = median(Score))
+
+  
+ 
+  ggplot(games_df, aes(Score)) +
+  geom_histogram(fill = "red", color = "black", alpha = 0.2) +
+  geom_vline(aes(xintercept = median(Score)), color = "blue", lty = "dashed", size  =1) +
+    geom_vline(aes(xintercept = mean(Score)), color = "red", lty = "dashed", size  =1)
+
+```
+
+
+In some situations another option in showing the distribution of a variable would be to use a density plot, which is like a smoother histogram.
+ 
+ 
+```{r}
+games_df %>%
+  filter(Score >= 1) %>%
+  summarize(Average = mean(Score),
+            Median = median(Score))
+
+games_df %>%
+  filter(Score >= 1) %>%
+ggplot(aes(Score)) +
+  geom_density(fill = "red", color = "black", alpha = 0.2) +
+  geom_vline(aes(xintercept = median(Score)), color = "blue", lty = "dashed", size  =1) +
+    geom_vline(aes(xintercept = mean(Score)), color = "red", lty = "dashed", size  =1)
+ 
+ 
+ 
+``` 
+
+ 
+It is a lot easier to see how skewed the data is as well as the concentration of scores.  The mean and median are much better observed here as well.
+
+
+ Now another thing that could be done differently. Instead of creating mutiple 6 plots with 6 ggplot functions, I could have made them with two through the use of facetting. Facetting simply means you can create mutliple plots   
+
+
+I want to analysis on all three consoles together. The best way to do that is to join my data frames together. There are multiple joins avaiable to me in R. Considering that they have the exact same variables, it  makes the most sense to create  a new dataframe using bind_rows. I originally created in by combining  WiiU_df with the PS4_df and then the combined dataframe with the Xbox1_df.    
+
+```{r}
+Big2_df <- bind_rows(PS4_df, WiiU_df)
+Big3_df <- bind_rows(Xbox1_df, Big2_df)
+
+jag <- list(PS4_df, WiiU_df, Xbox1_df)
+NBig3 <- reduce(jag, bind_rows)
+
+glimpse(Big3_df)
+
+Big3_df %>%
+  ggplot(aes(Score)) +
+  geom_histogram(aes(y = ..density.. , fill = "light blue", color = "black")) +
+  geom_density(color = "dark blue") +
+  facet_wrap( ~ Platform)
+
+IQR(games_df$Score)
+```
+
+
+```{r}
+
+ggplot(Xbox1_df, aes(x = Score, y = Genre)) + geom_point() + ggtitle("Xbox One") 
+
+Xbox1_df %>%
+  ggplot(aes(x = Score, y = Genre)) + 
+  geom_jitter(alpha = .5) + 
+  ggtitle("Xbox One") 
+
+```
