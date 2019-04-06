@@ -66,10 +66,10 @@ ggplot(aes(Score)) +
 It is a lot easier to see how skewed the data is as well as the concentration of scores.  The mean and median are much better observed here as well.
 
 
- Now another thing that could be done differently. Instead of creating mutiple  plots with 6 ggplot functions, I could have made them with two through the use of facetting. Facetting simply means you can create mutliple plots   
+Now another thing that could be done differently. Instead of creating mutiple  plots with 6 ggplot functions, I could have made them with two through the use of facetting. Facetting simply means you can create mutliple plots.   
 
 
-I want to analyze on all three consoles together. The best way to do that is to join my data frames together. There are multiple joins avaiable to me in R. Considering that they have the exact same variables, it  makes the most sense to create  a new dataframe using bind_rows. I originally created in by combining  WiiU_df with the PS4_df and then the combined dataframe with the Xbox1_df. However I've recently learned that I can use the purrr package for this. The reduce function allows me to apply a dplyr function to a list. So I'll do just that. If you notice, jag and Big3_df gave me the same results.    
+I also want to analyze  all three consoles together. The best way to do that is to join my data frames together. There are multiple joins avaiable to me in R. Considering that they have the exact same variables, it  makes the most sense to create  a new dataframe using bind_rows. I originally created the Big3_df by combining  WiiU_df with the PS4_df and then the combined dataframe with the Xbox1_df. However, I've recently learned that I can use the purrr package for this. The reduce function allows me to apply a dplyr function to a list. So I'll do just that. If you notice, jag and Big3_df gave me the same results.    
 
 ```{r}
 Big2_df <- bind_rows(PS4_df, WiiU_df)
@@ -85,5 +85,6 @@ Big3_df %>%
   geom_histogram(aes(fill = "dark blue")) +
   facet_wrap( ~ Platform)
 
-IQR(games_df$Score)
 ```
+
+
