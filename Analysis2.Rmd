@@ -9,8 +9,6 @@ Hello everyone. Nice to see you all here again. This is a start of a little seri
 
 Starting from the top, Instead of loading ggplot2 I can now load the Tidyverse package. This package is a one stop shop for exploratory data analysis. Included in the dpylr package is glimpse. This is just like str except everything the results can fit the screen neatly 
 ```{r}
-install.packages("purrr")
-
 library(tidyverse)
 library(purrr)
 
@@ -84,8 +82,7 @@ glimpse(Big3_df)
 
 Big3_df %>%
   ggplot(aes(Score)) +
-  geom_histogram(aes(y = ..density.. , fill = "light blue", color = "black")) +
-  geom_density(color = "dark blue") +
+  geom_histogram(aes(fill = "dark blue", color = "black")) +
   facet_wrap( ~ Platform)
 
 IQR(games_df$Score)
